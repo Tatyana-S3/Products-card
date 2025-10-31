@@ -8,7 +8,7 @@ import {
   searchClearHandler,
   searchFormSubmit,
 } from './js/handlers';
-import { closeModal, toggleModal } from './js/modal';
+import { toggleModal } from './js/modal';
 import { refs } from './js/refs';
 
 document.addEventListener('DOMContentLoaded', initializeHomePage);
@@ -21,12 +21,14 @@ refs.searchClearBtn.addEventListener('click', searchClearHandler);
 
 refs.loadMoreBtn.addEventListener('click', handleLoadNext);
 
-refs.modalCloseBtn.addEventListener('click', closeModal);
+refs.modalCloseBtn.addEventListener('click', toggleModal);
 refs.modalCartBtn.addEventListener('click', addToCartHandler);
 refs.modalWishlistBtn.addEventListener('click', addToWishlistHandler);
 
 document.addEventListener('keydown', event => {
   if (event.code === 'Escape') {
-    toggleModal();
+    if (refs.modalWindow.classList.contains('modal--is-open')) {
+      toggleModal();
+    }
   }
 });

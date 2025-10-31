@@ -51,7 +51,7 @@ async function loadMoreProducts() {
     } else {
       const categoryProducts = await getProductsByCategories(activeCategory);
       totalItem = categoryProducts.length;
-      productsToRender = categoryProducts.products.slice(skip, end);
+      productsToRender = categoryProducts.slice(skip, end);
     }
 
     if (currentPage === 1) {
@@ -93,6 +93,8 @@ export async function handleLoadNext() {
 }
 
 export async function initializeHomePage() {
+  updateCartCount();
+  updateWishlistCount();
   try {
     const categories = await getCategories();
     renderCategories(categories);
@@ -195,6 +197,27 @@ export async function searchClearHandler() {
   await loadMoreProducts();
 }
 
+export function updateCartCount() {
+  const currentCart = getCartItem();
+  const count = currentCart.length;
+
+  if (refs.navCartCount) {
+    refs.navCartCount.textContent = count;
+  }
+
+  if (refs.summaryCartCount) {
+    refs.summaryCartCount.textContent = count;
+  }
+}
+export function updateWishlistCount() {
+  const currentWishlist = getWishlistItem();
+  const count = currentWishlist.length;
+
+  if (refs.navWishlistCount) {
+    refs.navWishlistCount.textContent = count;
+  }
+}
+
 export async function addToCartHandler(evt) {
   const productId = evt.target.dataset.id;
 
@@ -222,27 +245,6 @@ export async function addToCartHandler(evt) {
     refs.modalCartBtn.textContent = 'Add to cart';
 
     updateCartCount();
-  }
-}
-
-export function updateCartCount() {
-  const currentCart = getCartItem();
-  const count = currentCart.length;
-
-  if (refs.navCartCount) {
-    refs.navCartCount.textContent = count;
-  }
-
-  if (refs.summaryCartCount) {
-    refs.summaryCartCount.textContent = count;
-  }
-}
-export function updateWishlistCount() {
-  const currentWishlist = getWishlistItem();
-  const count = currentWishlist.length;
-
-  if (refs.navWishlistCount) {
-    refs.navWishlistCount.textContent = count;
   }
 }
 
@@ -276,5 +278,19 @@ export async function addToWishlistHandler(evt) {
     });
 
     updateWishlistCount();
+
+    if (refs.productsList) {
+      const productCardToRemove = refs.productsList.querySelector(
+        `.products__item[data-id="${productId}"]`
+      );
+
+      if (productCardToRemove) {
+        productCardToRemove.remove();
+
+        if (currentWishlist.length === 0) {
+          refs.divNotFound.classList.add('not-found--visible');
+        }
+      }
+    }
   }
 }
