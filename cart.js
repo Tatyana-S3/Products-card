@@ -1,0 +1,2 @@
+import{j as s,k as e,b as i,a as n,r as d}from"./assets/handlers-Cj32vxIM.js";import{i as c}from"./assets/vendor-Cikf_Pls.js";document.addEventListener("DOMContentLoaded",m);async function m(){s();const t=e();(!t||t.length===0)&&i.divNotFound.classList.add("not-found--visible");try{const r=t.map(o=>n(o)),a=await Promise.all(r);d(a)}catch{c.error({message:"Error loading items in shopping cart!"})}}
+//# sourceMappingURL=cart.js.map
