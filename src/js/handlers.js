@@ -17,12 +17,16 @@ import iziToast from 'izitoast';
 import {
   hideLoader,
   hideLoadMoreButton,
+  initializeTheme,
   scrollNextPart,
   showLoader,
   showLoadMoreButton,
+  updateCartCount,
+  updateWishlistCount,
 } from './helpers';
 import { toggleModal } from './modal';
 import { getCartItem, getWishlistItem, saveToLocalStorage } from './storage';
+import { initializeCartPage } from '../cart';
 
 let currentPage = 1;
 let totalPages = 0;
@@ -92,7 +96,24 @@ export async function handleLoadNext() {
   await loadMoreProducts();
 }
 
+export function toggleTheme() {
+  const isDark = document.body.hasAttribute('data-theme');
+  let newTheme;
+
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    newTheme = 'light';
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    newTheme = 'dark';
+  }
+  saveToLocalStorage(STORAGE_KEY.THEME, newTheme);
+
+  refs.darkThemeBtn.innerHTML = newTheme === 'dark' ? '&#9790;' : '&#9728;';
+}
+
 export async function initializeHomePage() {
+  initializeTheme();
   updateCartCount();
   updateWishlistCount();
   try {
@@ -140,9 +161,19 @@ export async function categoriesListHandler(event) {
 }
 
 export async function productsListHandler(event) {
+  if (event.target.closest('[data-action]')) {
+    return;
+  }
   const productCart = event.target.closest('.products__item');
 
   if (!productCart) return;
+
+  if (refs.modalCartBtn) {
+    refs.modalCartBtn.style.display = '';
+  }
+  if (refs.modalWishlistBtn) {
+    refs.modalWishlistBtn.style.display = '';
+  }
 
   const id = productCart.dataset.id;
 
@@ -155,7 +186,7 @@ export async function productsListHandler(event) {
     refs.modalWishlistBtn.dataset.id = id;
 
     const currentCart = getCartItem();
-    const isProductInCart = currentCart.includes(id);
+    const isProductInCart = currentCart.some(item => item.id === id);
 
     const currentWishlist = getWishlistItem();
     const isProductInWishlist = currentWishlist.includes(id);
@@ -197,27 +228,6 @@ export async function searchClearHandler() {
   await loadMoreProducts();
 }
 
-export function updateCartCount() {
-  const currentCart = getCartItem();
-  const count = currentCart.length;
-
-  if (refs.navCartCount) {
-    refs.navCartCount.textContent = count;
-  }
-
-  if (refs.summaryCartCount) {
-    refs.summaryCartCount.textContent = count;
-  }
-}
-export function updateWishlistCount() {
-  const currentWishlist = getWishlistItem();
-  const count = currentWishlist.length;
-
-  if (refs.navWishlistCount) {
-    refs.navWishlistCount.textContent = count;
-  }
-}
-
 export async function addToCartHandler(evt) {
   const productId = evt.target.dataset.id;
 
@@ -227,26 +237,58 @@ export async function addToCartHandler(evt) {
 
   const currentCart = getCartItem();
 
-  const productIndex = currentCart.findIndex(id => id === productId);
+  const itemIndex = currentCart.findIndex(item => item.id === productId);
 
-  if (productIndex === -1) {
-    currentCart.push(productId);
-    saveToLocalStorage(STORAGE_KEY.CART, currentCart);
-
+  if (itemIndex === -1) {
+    currentCart.push({ id: productId, quantity: 1 });
     refs.modalCartBtn.textContent = 'Remove from cart';
-    iziToast.success({
-      message: 'Item added to your basket!',
-    });
-
-    updateCartCount();
   } else {
-    currentCart.splice(productIndex, 1);
-    saveToLocalStorage(STORAGE_KEY.CART, currentCart);
+    currentCart.splice(itemIndex, 1);
     refs.modalCartBtn.textContent = 'Add to cart';
-
-    updateCartCount();
   }
+
+  saveToLocalStorage(STORAGE_KEY.CART, currentCart);
+
+  updateCartCount();
 }
+
+export function handleBuyProducts(productsData) {
+  openCheckoutModal(productsData);
+}
+
+// export function handleFinalCheckout(allProductsInCart) {
+//   const checkedCheckBoxes = document.querySelectorAll(
+//     '.checkout-checkbox:checked'
+//   );
+
+//   if (checkedCheckBoxes.length === 0) {
+//     iziToast.warning({
+//       message: 'Please select at least one item to purchase.',
+//     });
+//     return;
+//   }
+
+//   const selectedProductIds = new Set();
+//   checkedCheckBoxes.forEach(checkbox => {
+//     selectedProductIds.add(checkbox.dataset.id);
+//   });
+
+//   const updateCart = allProductsInCart.filter(
+//     item => !selectedProductIds.has(item.id)
+//   );
+
+//   saveToLocalStorage(STORAGE_KEY.CART, updateCart);
+
+//   toggleModal();
+//   updateCartCount();
+//   initializeCartPage();
+
+//   iziToast.success({
+//     title: 'Success!',
+//     message:
+//       'Your order has been successfully placed! Your basket has been updated.',
+//   });
+// }
 
 export async function addToWishlistHandler(evt) {
   const productId = evt.target.dataset.id;
@@ -263,9 +305,9 @@ export async function addToWishlistHandler(evt) {
     currentWishlist.push(productId);
     saveToLocalStorage(STORAGE_KEY.WISHLIST, currentWishlist);
     refs.modalWishlistBtn.textContent = 'Remove from Wishlist';
-    iziToast.success({
-      message: 'Item added to your Wishlist!',
-    });
+    // iziToast.info({
+    //   message: 'Item added to your Wishlist!',
+    // });
 
     updateWishlistCount();
   } else {
@@ -273,9 +315,9 @@ export async function addToWishlistHandler(evt) {
     saveToLocalStorage(STORAGE_KEY.WISHLIST, currentWishlist);
     refs.modalWishlistBtn.textContent = 'Add to Wishlist';
 
-    iziToast.info({
-      message: 'Item removed from your Wishlist!',
-    });
+    // iziToast.info({
+    //   message: 'Item removed from your Wishlist!',
+    // });
 
     updateWishlistCount();
 

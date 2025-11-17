@@ -25,3 +25,7 @@ export function getCartItem() {
 export function getWishlistItem() {
   return getFromLocalStorage(STORAGE_KEY.WISHLIST) || [];
 }
+
+export function getDarkTheme() {
+  return getFromLocalStorage(STORAGE_KEY.THEME);
+}

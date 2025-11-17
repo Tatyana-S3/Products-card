@@ -7,6 +7,7 @@ import {
   productsListHandler,
   searchClearHandler,
   searchFormSubmit,
+  toggleTheme,
 } from './js/handlers';
 import { toggleModal } from './js/modal';
 import { refs } from './js/refs';
@@ -20,6 +21,7 @@ refs.searchForm.addEventListener('submit', searchFormSubmit);
 refs.searchClearBtn.addEventListener('click', searchClearHandler);
 
 refs.loadMoreBtn.addEventListener('click', handleLoadNext);
+refs.darkThemeBtn.addEventListener('click', toggleTheme);
 
 refs.modalCloseBtn.addEventListener('click', toggleModal);
 refs.modalCartBtn.addEventListener('click', addToCartHandler);

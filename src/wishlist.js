@@ -3,19 +3,33 @@ import {
   addToCartHandler,
   addToWishlistHandler,
   productsListHandler,
-  updateWishlistCount,
+  toggleTheme,
 } from './js/handlers';
 import { renderProducts } from './js/render-function';
 import { getWishlistItem } from './js/storage';
 import { getProductsById } from './js/products-api';
 import { refs } from './js/refs';
 import { toggleModal } from './js/modal';
+import {
+  initializeTheme,
+  updateCartCount,
+  updateWishlistCount,
+} from './js/helpers';
 
-document.addEventListener('DOMContentLoaded', initializeWishlistPage);
+if (document.querySelector('.js-wishlist-page')) {
+  document.addEventListener('DOMContentLoaded', () => {
+    refs.darkThemeBtn.addEventListener('click', toggleTheme);
+    initializeWishlistPage();
+  });
+}
 
 async function initializeWishlistPage() {
   updateWishlistCount();
+  updateCartCount();
+  initializeTheme();
   const productIds = getWishlistItem();
+
+  refs.productsList.innerHTML = '';
 
   if (!productIds || productIds.length === 0) {
     iziToast.info({

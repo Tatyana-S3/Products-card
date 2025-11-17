@@ -32,7 +32,7 @@
 
   &:hover {
     border-color: #ff6b0a;
-    color: #ff6b0a;
+    color: #555555;
     background: #fffaf5;
     box-shadow: 0 4px 12px rgba(255, 107, 10, 0.1);
   }

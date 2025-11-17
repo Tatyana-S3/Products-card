@@ -13,3 +13,32 @@
 @import url('./cart.css');
 @import url('./not-found.css');
 @import url('./helpers.css');
+
+.color-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 6px;
+    border: 1px solid #ccc;
+}
+
+.categories__btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.categories__btn.is-active {
+    background-color: #333;
+    color: #fff;
+    border-color: #333;
+    font-weight: bold;
+    transform: scale(1.05);
+}
+
+.categories__btn:hover:not(.is-active) {
+    background-color: #f0f0f0;
+}

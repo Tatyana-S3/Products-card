@@ -55,7 +55,7 @@
 }
 
 [data-theme='dark'] button {
-  color: var(--primary-text-color);
+  color: var(--accent-color);
 }
 
 [data-theme='dark'] svg {

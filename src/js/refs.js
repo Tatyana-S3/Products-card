@@ -7,6 +7,7 @@ export const refs = {
   // ---------------HELPERS--------------------
   loadMoreBtn: document.querySelector('.load-more-btn'),
   loader: document.querySelector('.loader'),
+  darkThemeBtn: document.querySelector('.theme-toggle-btn'),
 
   // ---------------MODAL WINDOW--------------------
   modalWindow: document.querySelector('.modal'),
@@ -22,6 +23,8 @@ export const refs = {
   //---------------Cart-------------
   navCartCount: document.querySelector('.nav__count[data-cart-count]'),
   summaryCartCount: document.querySelector('.cart-summary__value[data-count]'),
+  summaryTotalPrice: document.querySelector('.cart-summary__value[data-price]'),
+  buyBtn: document.querySelector('.cart-summary__btn'),
 
   //-------------Wishlist-----------
   navWishlistCount: document.querySelector('.nav__count[data-wishlist-count]'),
