@@ -30,7 +30,14 @@ export async function initializeCartPage() {
   initializeTheme();
 
   const cartItems = getCartItem();
-  const isCartEmpty = !cartItems || cartItems.length === 0;
+
+  const validCartItems = cartItems.filter(item => {
+    return item && item.id && !isNaN(Number(item.id));
+  });
+
+  saveToLocalStorage(STORAGE_KEY.CART, validCartItems);
+
+  const isCartEmpty = !validCartItems || validCartItems.length === 0;
 
   refs.productsList.innerHTML = '';
 
@@ -45,13 +52,13 @@ export async function initializeCartPage() {
   refs.divNotFound.classList.remove('not-found--visible');
 
   try {
-    const productPromises = cartItems.map(item =>
+    const productPromises = validCartItems.map(item =>
       getProductsById(Number(item.id))
     );
     const fetchedProducts = await Promise.all(productPromises);
 
     cartProductsData = fetchedProducts.map(product => {
-      const cartItem = cartItems.find(item => item.id === product.id);
+      const cartItem = validCartItems.find(item => item.id === product.id);
       return { ...product, quantity: cartItem ? cartItem.quantity : 1 };
     });
 
